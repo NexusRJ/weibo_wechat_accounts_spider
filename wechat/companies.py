@@ -1,8 +1,13 @@
 # coding: utf-8
 
+import time
+import random
+
 import requests
 import pymongo
+import bson
 from lxml import etree
+import concurrent
 
 from settings import HEADERS, SEARCH_ACCOUNT_URL, SEARCH_ARTICLE_URL, HOST_URL, MONGO_HOST, MONGO_PORT
 
@@ -29,6 +34,7 @@ class WechatSpider(object):
         return response
 
     def download_image(self, url, file_type='.jpg'):
+        print(url)
         response = self.download(url, 1)
         file_name = url + file_type
         return (file_name, response.content)
@@ -60,7 +66,7 @@ class WechatSpider(object):
             introduction = get_string(introduction)
             pos_code_url = item.xpath(".//div[@class='pos-box']/img/@src")[0]
             pos_code_image_name, pos_code_image = self.download_image(pos_code_url, '.jpg')
-            pos_code_image = pos_code_image.decode('utf-8')
+            pos_code_image = bson.Binary(pos_code_image)
             pos_code_image_name = pos_code_image_name.split('/')[-1]
             item_result = dict()
             item_result['name'] = name
@@ -72,12 +78,11 @@ class WechatSpider(object):
             self.save_to_mongo(item_result)
 
     def save_to_mongo(self, item):
-        self.collection.insert_one(item)
-        # try:
-        #     self.collection.insert_one(item)
-        #     print('%s done.' % (item['name']))
-        # except:
-        #     print('%s:%s failed save.' % (item['name'], item['url']))
+        try:
+            self.collection.insert_one(item)
+            print('%s done.' % (item['name']))
+        except:
+            print('%s:%s failed save.' % (item['name'], item['url']))
 
     def run(self):
         self.get_page_count()
