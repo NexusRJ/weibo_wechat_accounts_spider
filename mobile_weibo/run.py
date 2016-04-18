@@ -2,14 +2,14 @@
 
 from sys import argv
 
-from get_uids import handle_first_page, get_jsons
+from get_uids import Weibo_uids
 from companies import multi_run
 from settings import SCOPE, KEYWORD
 
 
 def run_uids(scope, keyword):
-    handle_first_page(scope, keyword)
-    get_jsons(scope, keyword)
+    weibo_uid = Weibo_uids(scope, keyword)
+    weibo_uid.run()
 
 
 def run_info(scope, keyword):
