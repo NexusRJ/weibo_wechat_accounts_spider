@@ -16,3 +16,6 @@ HEADERS = {
 SEARCH_ACCOUNT_URL = 'http://weixin.sogou.com/weixin?query={0}&_sug_type_=&_sug_=n&type=1&page={1}&ie=utf8'
 SEARCH_ARTICLE_URL = 'http://weixin.sogou.com/weixin?query={0}&_sug_type_=&_sug_=n&type=2&page={1}&ie=utf8'
 HOST_URL = 'http://weixin.sogou.com'
+
+MONGO_HOST = 'localhost'
+MONGO_PORT = 27017
