@@ -2,14 +2,16 @@
 
 import time
 import random
+import re
+from sys import argv
 
 import requests
 import pymongo
 import bson
 from lxml import etree
-import concurrent
+from concurrent.futures import ThreadPoolExecutor
 
-from settings import HEADERS, SEARCH_ACCOUNT_URL, SEARCH_ARTICLE_URL, HOST_URL, MONGO_HOST, MONGO_PORT
+from settings import HEADERS, SEARCH_ACCOUNT_URL, SEARCH_ARTICLE_URL, MONGO_HOST, MONGO_PORT
 
 
 class WechatSpider(object):
@@ -34,25 +36,60 @@ class WechatSpider(object):
         return response
 
     def download_image(self, url, file_type='.jpg'):
-        print(url)
         response = self.download(url, 1)
-        file_name = url + file_type
-        return (file_name, response.content)
+        return response
 
     def get_page_count(self):
+        print("start getting pages count.")
         url = SEARCH_ACCOUNT_URL.format(self.keyword, 1)
-        response = requests.get(url, headers=HEADERS)
+        response = self.download(url)
+        while self.if_Captcha(response):
+            print('need captcha.')
+            raw_input()
+            response = self.download(url)
         dom_tree = etree.HTML(response.content)
-        count = dom_tree.xpath("//resnum[@id='scd_num']/text()")
+        count = int(dom_tree.xpath("//resnum[@id='scd_num']/text()")[0])
         self.page_count = count/10 + 1 if count % 10 else count/10
+        print("%s pages got." % self.page_count)
+
+    def generate_page_url(self, mode=1):
+        '''
+        mode 1 for searching offical accounts,
+        mode 2 for searching wechat articles.
+        '''
+        if mode == 1:
+            index_url = SEARCH_ACCOUNT_URL
+        elif mode == 2:
+            index_url = SEARCH_ARTICLE_URL
+        else:
+            raise ValueError('Wrong argument when generate page url')
+        for page in range(1, self.page_count+1):
+            url = index_url.format(self.keyword, page)
+            print('yield page %s.' % page)
+            yield url
+
+    def if_Captcha(self, response):
+        captcha_re = re.compile("id=\"seccodeImage\"")
+        if re.search(captcha_re, response.text):
+            return True
+        else:
+            return False
 
     def parse_page(self, url):
+        t = random.random() * 4
+        time.sleep(t)
+        print("wait for %s seconds" % t)
+        print("%s start.\n" % url)
         response = self.download(url, 0)
+        while self.if_Captcha(response):
+            print("need captcha.")
+            raw_input()
+            response.self.download(url, 0)
         dom_tree = etree.HTML(response.content)
         items = dom_tree.xpath("//div[contains(@id, 'sogou_vr_11002301_box_')]")
         get_string = lambda x: x.xpath("string(.)")
         for item in items:
-            url = HOST_URL + item.xpath("./@href")[0]
+            url = item.xpath("./@href")[0]
             name = item.xpath(".//h3")[0]
             name = get_string(name)
             wechat_name = item.xpath(".//h4/span/label/text()")[0]
@@ -65,9 +102,14 @@ class WechatSpider(object):
                 authentication = ''
             introduction = get_string(introduction)
             pos_code_url = item.xpath(".//div[@class='pos-box']/img/@src")[0]
-            pos_code_image_name, pos_code_image = self.download_image(pos_code_url, '.jpg')
-            pos_code_image = bson.Binary(pos_code_image)
-            pos_code_image_name = pos_code_image_name.split('/')[-1]
+            pos_code_image = self.download_image(pos_code_url, '.jpg')
+            while self.if_Captcha(pos_code_image):
+                print("need captcha")
+                raw_input()
+                pos_code_image = self.download_image(pos_code_url, '.jpg')
+            # convert image to bson binary data type for saving in mongo.
+            pos_code_image = bson.Binary(pos_code_image.content)
+            pos_code_image_name = "%s_%s.jpg" % (name, wechat_name)
             item_result = dict()
             item_result['name'] = name
             item_result['wechat_id'] = wechat_name
@@ -80,24 +122,36 @@ class WechatSpider(object):
     def save_to_mongo(self, item):
         try:
             self.collection.insert_one(item)
-            print('%s done.' % (item['name']))
-        except:
-            print('%s:%s failed save.' % (item['name'], item['url']))
+            print '%s done.' % (item['name'])
+        except Exception as e:
+            print '%s:%s failed save,error message: %s.' % (item['name'], item['url'], e.message)
 
-    def run(self):
+    def single_thread_run(self):
         self.get_page_count()
-        for page in self.page_count:
+        print(self.page_count)
+        for page in range(1, self.page_count+1):
             url = SEARCH_ACCOUNT_URL.format(self.keyword, page)
             try:
                 self.parse_page(url)
-            except:
-                print('%s was wrong' % url)
+            except KeyboardInterrupt:
+                print('Shutdown by receiving Ctrl-c.')
+                import sys
+                sys.exit()
+            except Exception as e:
+                print('%s was wrong,error message: %s' % (url, e.message))
+                print(e.args)
                 continue
+
+    def multi_thread_run(self):
+        self.get_page_count()
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            queue = {executor.submit(self.parse_page, url) for url in self.generate_page_url()}
 
 
 if __name__ == "__main__":
-    ws = WechatSpider('海外置业')
-    import time
-    for i in range(3, 8):
-        ws.parse_page('http://weixin.sogou.com/weixin?type=1&query=%E6%B5%B7%E5%A4%96+%E7%BD%AE%E4%B8%9A&ie=utf8&_sug_=n&_sug_type_=&page={0}'.format(i))
-        time.sleep(2)
+    keyword = argv[1]
+    ws = WechatSpider(keyword)
+    # for i in range(3, 8):
+    #     ws.parse_page('http://weixin.sogou.com/weixin?type=1&query=%E6%B5%B7%E5%A4%96+%E7%BD%AE%E4%B8%9A&ie=utf8&_sug_=n&_sug_type_=&page={0}'.format(i))
+    #     time.sleep(2)
+    ws.multi_thread_run()
