@@ -10,17 +10,16 @@ from settings import AJAX_HEADERS, FIRST_PAGE_URL, AJAX_URL
 
 class Weibo_uids(object):
 
-    def __init__(self, scope, keyword):
-        self.scope = scope
+    def __init__(self, keyword):
         self.keyword = keyword
 
-    def handle_first_page(self, scope, keyword):
-        f = open('uids/%s_%s_uids.txt' % (scope, keyword), 'ab')
-        url = FIRST_PAGE_URL.format(scope, keyword)
+    def handle_first_page(self, keyword):
+        f = open('uids/%s_uids.txt' % keyword, 'ab')
+        url = FIRST_PAGE_URL.format(keyword)
         response = requests.get(url, headers=AJAX_HEADERS)
         uid_re = re.compile('&uid=([0-9]*)')
         uids = re.findall(uid_re, response.content)
-        print('start 1')
+        print('start')
         for uid in uids:
             print(str(uid)),
             f.write(str(uid))
@@ -28,13 +27,11 @@ class Weibo_uids(object):
         print('\n------------------')
         f.close()
 
-
     def download_and_parse(self, url):
         response = requests.get(url)
         print(response.status_code)
         weibo_json = json.loads(response.text)
         return response, weibo_json
-
 
     def parse_json(self, weibo_json):
         user_list = weibo_json['cards'][0]['card_group']
@@ -55,9 +52,9 @@ class Weibo_uids(object):
                 f.write(message)
                 f.write('\n')
 
-    def get_jsons(self, scope, keyword):
-        with open("uids/%s_%s_uids.txt" % (scope, keyword), 'ab') as f:
-            page_url = AJAX_URL.format(scope, keyword)
+    def get_jsons(self, keyword):
+        with open("uids/%s_uids.txt" % keyword, 'ab') as f:
+            page_url = AJAX_URL.format(keyword)
             i = 2
             max_page = 3
             while(i <= max_page):
@@ -82,5 +79,5 @@ class Weibo_uids(object):
                 i += 1
 
     def run(self):
-        self.handle_first_page(self, self.scope, self.keyword)
-        self.get_jsons(self, self.scope, self.keyword)
+        self.handle_first_page(self, self.keyword)
+        self.get_jsons(self.keyword)

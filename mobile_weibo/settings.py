@@ -23,8 +23,8 @@ AJAX_HEADERS = {
 #     "page": "2",
 # }
 
-FIRST_PAGE_URL = 'http://m.weibo.cn/p/index?containerid=100103type%3D3%26q%3D{0}%20{1}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}%20{1}&uid=5884230638'
-AJAX_URL = 'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}+{1}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}+{1}&uid=5884230638&luicode=10000011&lfid=100103type%3D3&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}+{1}%26isv%3D3%26specfilter%3D1%26log_type%3D6&uicode=10000011&next_cursor=&page='
+FIRST_PAGE_URL = 'http://m.weibo.cn/p/index?containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638'
+AJAX_URL = 'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638&luicode=10000011&lfid=100103type%3D3&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&uicode=10000011&next_cursor=&page='
 
 WEIBO_URL = 'http://weibo.com/%s/about'
 HEADERS = {

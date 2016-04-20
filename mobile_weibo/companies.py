@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import os
 import re
 import time
 import random
@@ -10,6 +9,7 @@ import threadpool
 import pymongo
 
 from settings import WEIBO_URL, HEADERS, DB_NAME, COLLECTION_NAME
+from run import keyword
 
 
 class WeiboDownload(object):
@@ -54,7 +54,7 @@ class WeiboDownload(object):
 
     def save_to_mongo(self, dict_d):
         client = pymongo.MongoClient('localhost', 27017)
-        collection = client[DB_NAME][COLLECTION_NAME]
+        collection = client[DB_NAME][keyword.decode('utf-8')]
         url = dict_d['url']
         try:
             self.is_existed(url, collection)
