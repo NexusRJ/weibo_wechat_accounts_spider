@@ -18,9 +18,9 @@ class WeiboDownload(object):
         self.uid = uid.strip()
         self.keyword = keyword
         if SEARCH_TYPE == 1:
-            self.collection_name = u"%s_机构认证"
+            self.collection_name = u"%s_机构认证" % keyword
         elif SEARCH_TYPE == 2:
-            self.collection_name = u"%s_所有用户"
+            self.collection_name = u"%s_所有用户" % keyword
         else:
             raise ValueError("wrong search type")
 
@@ -64,7 +64,11 @@ class WeiboDownload(object):
     def save_to_mongo(self, dict_d):
         client = pymongo.MongoClient('localhost', 27017)
         collection = client[DB_NAME][self.collection_name]
-        url = dict_d['url']
+        if dict_d:
+            url = dict_d['url']
+        else:
+            self.error_handle("download 404 error.")
+            return None
         try:
             self.is_existed(url, collection)
         except:
