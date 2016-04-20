@@ -4,6 +4,7 @@ from sys import argv
 
 from get_uids import Weibo_uids
 from companies import multi_run
+from settings import SEARCH_TYPE
 
 
 def run_uids(keyword):
@@ -12,10 +13,16 @@ def run_uids(keyword):
 
 
 def run_info(keyword):
-    with open('uids/%s_uids.txt' % (keyword), 'rb') as f:
+    if SEARCH_TYPE == 1:
+        uid_file_name = "uids/%s_uids_verified_companies.txt" % keyword
+    elif SEARCH_TYPE == 2:
+        uid_file_name = "uids/%s_uids_all_users.txt" % keyword
+    else:
+        raise ValueError("wrong search type.")
+    with open(uid_file_name, 'rb') as f:
         uids = f.readlines()
     uids = [uid.strip() for uid in uids]
-    multi_run(uids)
+    multi_run(uids, keyword)
 
 
 if __name__ == '__main__':
@@ -32,5 +39,7 @@ if __name__ == '__main__':
         keyword = argv[1]
     else:
         keyword = reduce(lambda x, y: x+'+'+y, argv[1:])
-    run_uids(keyword)
+    print('reciving keyword %s' % keyword)
+    keyword = keyword.decode('utf-8')
+    # run_uids(keyword)
     run_info(keyword)

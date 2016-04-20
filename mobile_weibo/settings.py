@@ -22,9 +22,13 @@ AJAX_HEADERS = {
 #     "next_cursor": "",
 #     "page": "2",
 # }
+# These two url are for verified companies.
+FIRST_PAGE_URL = u'http://m.weibo.cn/p/index?containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638'
+AJAX_URL = u'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638&luicode=10000011&lfid=100103type%3D39%26q%3D{0}%26t%3D&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&uicode=10000011&next_cursor=&page='
 
-FIRST_PAGE_URL = 'http://m.weibo.cn/p/index?containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638'
-AJAX_URL = 'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638&luicode=10000011&lfid=100103type%3D3&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&uicode=10000011&next_cursor=&page='
+# These for all users of weibo no matter verified or not.
+FIRST_PAGE_URL_ALL_USER = u'http://m.weibo.cn/main/pages/index?containerid=100103type%3D3%26q%3D{0}&type=user&queryVal={0}&luicode=10000011&lfid=100103type%3D3%26q%3D{0}&title={0}'
+AJAX_URL_ALL_USER = u'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}&type=user&queryVal={0}&luicode=10000011&lfid=100103type%3D3%26q%3D{0}&title={0}&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}&uicode=10000011&next_cursor=&page='
 
 WEIBO_URL = 'http://weibo.com/%s/about'
 HEADERS = {
@@ -48,3 +52,5 @@ keyword = 'insurance'
 DB_NAME = 'Companies'
 COLLECTION_NAME = '%s_%s' % (scope, keyword)
 # COLLECTION_NAME = '%s_%s' % (SCOPE, KEYWORD)
+# 1 for verified companies, 2 for all weibo accounts no matter verified or not
+SEARCH_TYPE = 2
