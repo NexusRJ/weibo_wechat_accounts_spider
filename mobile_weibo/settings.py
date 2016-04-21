@@ -22,9 +22,13 @@ AJAX_HEADERS = {
 #     "next_cursor": "",
 #     "page": "2",
 # }
+# These two url are for verified companies.
+FIRST_PAGE_URL = u'http://m.weibo.cn/p/index?containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638'
+AJAX_URL = u'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}&uid=5884230638&luicode=10000011&lfid=100103type%3D39%26q%3D{0}%26t%3D&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}%26isv%3D3%26specfilter%3D1%26log_type%3D6&uicode=10000011&next_cursor=&page='
 
-FIRST_PAGE_URL = 'http://m.weibo.cn/p/index?containerid=100103type%3D3%26q%3D{0}%20{1}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}%20{1}&uid=5884230638'
-AJAX_URL = 'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}+{1}%26isv%3D3%26specfilter%3D1%26log_type%3D6&title=%E6%9C%BA%E6%9E%84%E8%AE%A4%E8%AF%81-{0}+{1}&uid=5884230638&luicode=10000011&lfid=100103type%3D3&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}+{1}%26isv%3D3%26specfilter%3D1%26log_type%3D6&uicode=10000011&next_cursor=&page='
+# These for all users of weibo no matter verified or not.
+FIRST_PAGE_URL_ALL_USER = u'http://m.weibo.cn/main/pages/index?containerid=100103type%3D3%26q%3D{0}&type=user&queryVal={0}&luicode=10000011&lfid=100103type%3D3%26q%3D{0}&title={0}'
+AJAX_URL_ALL_USER = u'http://m.weibo.cn/page/pageJson?containerid=&containerid=100103type%3D3%26q%3D{0}&type=user&queryVal={0}&luicode=10000011&lfid=100103type%3D3%26q%3D{0}&title={0}&v_p=11&ext=&fid=100103type%3D3%26q%3D{0}&uicode=10000011&next_cursor=&page='
 
 WEIBO_URL = 'http://weibo.com/%s/about'
 HEADERS = {
@@ -36,7 +40,7 @@ HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.109 Safari/537.36",
     "Accept-Encoding": "gzip, deflate, sdch",
     "Accept-Language": "zh-CN,zh;q=0.8",
-    "Cookie": "SINAGLOBAL=6577276759780.943.1453779320693; _s_tentry=www.reader8.cn; YF-Ugrow-G0=57484c7c1ded49566c905773d5d00f82; YF-V5-G0=bc033c7c7d5164aa92fea9d75cc6f127; YF-Page-G0=0dccd34751f5184c59dfe559c12ac40a; Apache=6170847057364.881.1456886840378; ULV=1456886840517:4:1:2:6170847057364.881.1456886840378:1456307239926; wb_feed_unfolded_2264633500=1; wb_feed_unfolded_5296319687=1; login_sid_t=8525d4511d6d138a717e945f20e832bb; wb_publish_vip_2264633500=1; WBtopGlobal_register_version=8a840560e41b693d; un=florent@zunest.com; UOR=www.wooyun.org,widget.weibo.com,www.baidu.com; SUHB=0U1ZtXBIQPyWSa; myuid=5884230638; SUB=_2AkMhrzo1dcNhrAZZkPwXz2vkb4VTgFCt8I-vZxaBEiMLXChJ3xAEx0lqtBN-Xtyh2Ra52xgFC0x8bcKZ4CKXAsxf20h3_GtqdUG8dPkf; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9Wh10cp2_7jHJZ1Ar4Jq1Bgh5JpV8GDQIPLDdJUQdK-7125pSoeVqcv_",
+    "Cookie": "SINAGLOBAL=1213665334507.823.1458891315810; YF-Page-G0=23b9d9eac864b0d725a27007679967df; _s_tentry=-; Apache=196413819212.4665.1460440366645; ULV=1460440366722:2:1:1:196413819212.4665.1460440366645:1458891315854; YF-V5-G0=572595c78566a84019ac3c65c1e95574; SUB=_2A256E1A5DeTxGeNG41YT8y7KyDSIHXVZacbxrDV8PUJbstBeLWXFkW9LHeuaj4uwneZcpk6zvceMs-b0PG4CsQ..; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9Wh10cp2_7jHJZ1Ar4Jq1Bgh5JpX5o2p; SUHB=0xnSua6Qdn0kHM; SSOLoginState=1461133417"
 }
 
 SCOPE = '上海'
@@ -48,3 +52,5 @@ keyword = 'insurance'
 DB_NAME = 'Companies'
 COLLECTION_NAME = '%s_%s' % (scope, keyword)
 # COLLECTION_NAME = '%s_%s' % (SCOPE, KEYWORD)
+# 1 for verified companies, 2 for all weibo accounts no matter verified or not
+SEARCH_TYPE = 1

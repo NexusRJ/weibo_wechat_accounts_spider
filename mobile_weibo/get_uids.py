@@ -1,26 +1,37 @@
 # coding: utf-8
 
 import re
+import time
+import random
 
 import requests
 import json
 
-from settings import AJAX_HEADERS, FIRST_PAGE_URL, AJAX_URL
+from settings import AJAX_HEADERS, FIRST_PAGE_URL, AJAX_URL, FIRST_PAGE_URL_ALL_USER, AJAX_URL_ALL_USER, SEARCH_TYPE
 
 
 class Weibo_uids(object):
 
-    def __init__(self, scope, keyword):
-        self.scope = scope
+    def __init__(self, keyword):
         self.keyword = keyword
+        if SEARCH_TYPE == 1:
+            self.ajax_url = AJAX_URL
+            self.first_page_url = FIRST_PAGE_URL
+            self.uid_file_name = "uids/%s_uids_verified_companies.txt" % keyword
+        elif SEARCH_TYPE == 2:
+            self.ajax_url = AJAX_URL_ALL_USER
+            self.first_page_url = FIRST_PAGE_URL_ALL_USER
+            self.uid_file_name = "uids/%s_uids_all_users.txt" % keyword
+        else:
+            raise ValueError('wrong search_type settings.')
 
-    def handle_first_page(self, scope, keyword):
-        f = open('uids/%s_%s_uids.txt' % (scope, keyword), 'ab')
-        url = FIRST_PAGE_URL.format(scope, keyword)
-        response = requests.get(url, headers=AJAX_HEADERS)
+    def handle_first_page(self, keyword):
+        f = open(self.uid_file_name, 'ab')
+        url = self.first_page_url.format(keyword)
+        response = self.download(url)
         uid_re = re.compile('&uid=([0-9]*)')
         uids = re.findall(uid_re, response.content)
-        print('start 1')
+        print('start')
         for uid in uids:
             print(str(uid)),
             f.write(str(uid))
@@ -28,13 +39,21 @@ class Weibo_uids(object):
         print('\n------------------')
         f.close()
 
+    def download(self, url):
+        try:
+            response = requests.get(url, headers=AJAX_HEADERS)
+        except Exception as e:
+            self.error_handle(e, code=0, url=url)
+        return response
 
     def download_and_parse(self, url):
-        response = requests.get(url)
-        print(response.status_code)
+        try:
+            response = requests.get(url, headers=AJAX_HEADERS)
+            print(response.status_code)
+        except Exception as e:
+            self.error_handle(e, code=0, url=url)
         weibo_json = json.loads(response.text)
         return response, weibo_json
-
 
     def parse_json(self, weibo_json):
         user_list = weibo_json['cards'][0]['card_group']
@@ -55,9 +74,9 @@ class Weibo_uids(object):
                 f.write(message)
                 f.write('\n')
 
-    def get_jsons(self, scope, keyword):
-        with open("uids/%s_%s_uids.txt" % (scope, keyword), 'ab') as f:
-            page_url = AJAX_URL.format(scope, keyword)
+    def get_jsons(self, keyword):
+        with open(self.uid_file_name, 'wb') as f:
+            page_url = self.ajax_url.format(keyword)
             i = 2
             max_page = 3
             while(i <= max_page):
@@ -72,6 +91,9 @@ class Weibo_uids(object):
                 except TypeError as e:
                     self.error_handle(e, url=response.url, code=1)
                     continue
+                except IndexError as e:
+                    self.error_handle(e, url=response.url, code=1)
+                    continue
                 print("%s/%s" % (i, max_page))
                 for user in user_list:
                     uid = user['user']['id']
@@ -80,7 +102,13 @@ class Weibo_uids(object):
                     f.write('\n')
                 print('\n------------------')
                 i += 1
+                self.wait()
+
+    def wait(self, factor=1):
+        t = random.random()
+        print("wait for %s seconds" % t)
+        time.sleep(t)
 
     def run(self):
-        self.handle_first_page(self, self.scope, self.keyword)
-        self.get_jsons(self, self.scope, self.keyword)
+        self.handle_first_page(self.keyword)
+        self.get_jsons(self.keyword)

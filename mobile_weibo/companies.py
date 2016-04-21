@@ -1,6 +1,5 @@
 # coding: utf-8
 
-import os
 import re
 import time
 import random
@@ -9,17 +8,27 @@ import requests
 import threadpool
 import pymongo
 
-from settings import WEIBO_URL, HEADERS, DB_NAME, COLLECTION_NAME
+from settings import WEIBO_URL, HEADERS, DB_NAME, SEARCH_TYPE
 
 
 class WeiboDownload(object):
 
-    def __init__(self, uid):
-        self.url = WEIBO_URL % str(uid)
+    def __init__(self, uid, keyword):
+        self.url = WEIBO_URL % uid.strip()
         self.uid = uid.strip()
+        self.keyword = keyword
+        if SEARCH_TYPE == 1:
+            self.collection_name = u"%s_机构认证" % keyword
+        elif SEARCH_TYPE == 2:
+            self.collection_name = u"%s_所有用户" % keyword
+        else:
+            raise ValueError("wrong search type")
 
     def download(self):
-        response = requests.get(self.url, headers=HEADERS)
+        try:
+            response = requests.get(self.url, headers=HEADERS)
+        except Exception as e:
+            self.error_handle(e)
         return response
 
     def get_details(self, response):
@@ -54,8 +63,12 @@ class WeiboDownload(object):
 
     def save_to_mongo(self, dict_d):
         client = pymongo.MongoClient('localhost', 27017)
-        collection = client[DB_NAME][COLLECTION_NAME]
-        url = dict_d['url']
+        collection = client[DB_NAME][self.collection_name]
+        if dict_d:
+            url = dict_d['url']
+        else:
+            self.error_handle("download 404 error.")
+            return None
         try:
             self.is_existed(url, collection)
         except:
@@ -79,7 +92,7 @@ class WeiboDownload(object):
             print e.message
             return None
         else:
-            with open('failed_company.txt', 'ab') as f:
+            with open('failed_info/failed_company.txt', 'ab') as f:
                 f.write('{0}\n'.format(self.uid))
             print ('%s failed.'.format(self.uid)),
             print(e)
@@ -119,25 +132,28 @@ def try_re(re_content, text_content):
         return ''
 
 
-def run(uid):
-    wd = WeiboDownload(uid)
+def run(args):
+    uid = args['uid']
+    keyword = args['keyword']
+    wd = WeiboDownload(uid, keyword)
     wd.run()
 
 
-def multi_run(uids):
+def multi_run(uids, keyword):
     pool = threadpool.ThreadPool(10)
-    reqs = threadpool.makeRequests(run, uids)
+    args_list = [{'uid': uid, 'keyword': keyword} for uid in uids]
+    reqs = threadpool.makeRequests(run, args_list)
     [pool.putRequest(req) for req in reqs]
     pool.wait()
 
-if __name__ == '__main__':
-    f = open('weibo_uids.txt', 'rb')
-    uids = f.readlines()
-    f.close()
-    uids = [uid.strip() for uid in uids]
-    multi_run(uids)
-    # wd = WeiboDownload('3289319380')
-    # wd.run()
-    # d = wd.get_details(wd.download())
-    # for i in d:
-    #     print d[i]
+# if __name__ == '__main__':
+#     f = open('weibo_uids.txt', 'rb')
+#     uids = f.readlines()
+#     f.close()
+#     uids = [uid.strip() for uid in uids]
+#     multi_run(uids)
+#     # wd = WeiboDownload('3289319380')
+#     # wd.run()
+#     # d = wd.get_details(wd.download())
+#     # for i in d:
+#     #     print d[i]
