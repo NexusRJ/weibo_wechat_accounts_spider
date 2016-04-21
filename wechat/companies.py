@@ -22,6 +22,7 @@ class WechatSpider(object):
         db_name = keyword.replace(' ', '_').decode('utf-8')
         client = pymongo.MongoClient(MONGO_HOST, MONGO_PORT)
         self.collection = client['wechat_offical'][db_name]
+        self.collection.ensure_index('wechat_id')
         fl = logging.FileHandler('wechat_offical.log')
         sl = logging.StreamHandler()
         formatter = logging.Formatter('%(asctime)s-%(levelname)s-%(message)s')

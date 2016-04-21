@@ -8,6 +8,7 @@ def run(keyword):
     print("receiving keyword %s" % keyword)
     ws = WechatSpider(keyword)
     ws.multi_thread_run()
+    return 1
 
 
 if __name__ == '__main__':
