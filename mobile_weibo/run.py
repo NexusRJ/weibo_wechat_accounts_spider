@@ -41,5 +41,5 @@ if __name__ == '__main__':
         keyword = reduce(lambda x, y: x+'+'+y, argv[1:])
     print('reciving keyword %s' % keyword)
     keyword = keyword.decode('utf-8')
-    # run_uids(keyword)
+    run_uids(keyword)
     run_info(keyword)

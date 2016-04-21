@@ -18,7 +18,7 @@ class Weibo_uids(object):
             self.ajax_url = AJAX_URL
             self.first_page_url = FIRST_PAGE_URL
             self.uid_file_name = "uids/%s_uids_verified_companies.txt" % keyword
-        if SEARCH_TYPE == 2:
+        elif SEARCH_TYPE == 2:
             self.ajax_url = AJAX_URL_ALL_USER
             self.first_page_url = FIRST_PAGE_URL_ALL_USER
             self.uid_file_name = "uids/%s_uids_all_users.txt" % keyword

@@ -53,4 +53,4 @@ DB_NAME = 'Companies'
 COLLECTION_NAME = '%s_%s' % (scope, keyword)
 # COLLECTION_NAME = '%s_%s' % (SCOPE, KEYWORD)
 # 1 for verified companies, 2 for all weibo accounts no matter verified or not
-SEARCH_TYPE = 2
+SEARCH_TYPE = 1
