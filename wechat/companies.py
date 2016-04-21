@@ -5,13 +5,12 @@ import random
 import re
 import logging
 import traceback
-from sys import argv
 
 import requests
 import pymongo
 import bson
 from lxml import etree
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 
 from settings import HEADERS, SEARCH_ACCOUNT_URL, SEARCH_ARTICLE_URL, MONGO_HOST, MONGO_PORT
 
@@ -174,12 +173,3 @@ class WechatSpider(object):
         self.get_page_count()
         with ThreadPoolExecutor(max_workers=5) as executor:
             queue = {executor.submit(self.parse_page, url) for url in self.generate_page_url()}
-
-
-if __name__ == "__main__":
-    keyword = argv[1]
-    ws = WechatSpider(keyword)
-    # for i in range(3, 8):
-    #     ws.parse_page('http://weixin.sogou.com/weixin?type=1&query=%E6%B5%B7%E5%A4%96+%E7%BD%AE%E4%B8%9A&ie=utf8&_sug_=n&_sug_type_=&page={0}'.format(i))
-    #     time.sleep(2)
-    ws.multi_thread_run()
