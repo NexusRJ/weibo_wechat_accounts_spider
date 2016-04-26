@@ -25,6 +25,12 @@ def run_info(keyword):
     multi_run(uids, keyword)
 
 
+def run(keyword):
+    run_uids(keyword)
+    run_info(keyword)
+    return 1
+
+
 if __name__ == '__main__':
     # if option == 0:
     #     run_uids(SCOPE, KEYWORD)
@@ -43,3 +49,4 @@ if __name__ == '__main__':
     keyword = keyword.decode('utf-8')
     run_uids(keyword)
     run_info(keyword)
+    run(keyword)
