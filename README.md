@@ -11,7 +11,7 @@ all the data will store in the mongodb, the collection name generated according 
 no money for using CAPTCHA api, so I turn to crawl the mobile web version of weibo, all you need is changing the cookie every two or three days, in my own experience, I don't update cookie for three days but still working well.
 for now it will crawl weibo authenticated companies users,you can modify by changing the url in settings.py
 
-**example: run mobile_weibo/run.py Elon Musk SPACE X**
+**example: python mobile_weibo/run.py Elon Musk SPACE X**
 
 the keyword will be 'Elon Musk SPACE X' to search
 
@@ -21,7 +21,7 @@ http://weixin.sogou.com/ ,all info data will be store in the mongodb and the QR 
 
 usage: same as the weibo spider
 
-**example: run wechat/run.py Elon Musk SPACE X**
+**example: python wechat/run.py Elon Musk SPACE X**
 
 ##**Requirements**
 all the python lib you need to run the spider are requests,lxml,pymongo,and concurrent.futures(threadpool for weibo)
